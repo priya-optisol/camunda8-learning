@@ -1,0 +1,35 @@
+{
+  "components": [
+    {
+      "text": "You have entered invalid aadhar number please cancel the request create new request with valid aadhar number.",
+      "type": "text",
+      "layout": {
+        "row": "Row_16rzq53",
+        "columns": null
+      },
+      "id": "Field_08a1xcp"
+    },
+    {
+      "label": "Cancel",
+      "action": "submit",
+      "type": "button",
+      "layout": {
+        "row": "Row_10960j5",
+        "columns": null
+      },
+      "id": "Field_1xmcbbq",
+      "properties": {
+        "taskAction": "cancel"
+      }
+    }
+  ],
+  "type": "default",
+  "id": "kyc-form",
+  "executionPlatform": "Camunda Cloud",
+  "executionPlatformVersion": "8.9.0",
+  "exporter": {
+    "name": "Camunda Modeler",
+    "version": "5.46.1"
+  },
+  "schemaVersion": 19
+}

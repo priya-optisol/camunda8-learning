@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:zeebe="http://camunda.org/schema/zeebe/1.0" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_0lqd0ki" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.46.1" modeler:executionPlatform="Camunda Cloud" modeler:executionPlatformVersion="8.9.0">
+  <bpmn:process id="excer3-1" isExecutable="true">
+    <bpmn:startEvent id="StartEvent_1" name="start">
+      <bpmn:outgoing>Flow_1uar11o</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:sequenceFlow id="Flow_1uar11o" sourceRef="StartEvent_1" targetRef="Activity_15giuqs" />
+    <bpmn:endEvent id="Event_0k2icbb" name="end">
+      <bpmn:incoming>Flow_1ibyghq</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_1yofso9" sourceRef="Activity_15giuqs" targetRef="Activity_1kzoieo" />
+    <bpmn:serviceTask id="Activity_15giuqs" name="call local api">
+      <bpmn:extensionElements>
+        <zeebe:taskDefinition type="process-api-call" />
+        <zeebe:ioMapping>
+          <zeebe:input source="=&#34;all&#34;" target="students" />
+          <zeebe:output source="=data.apiStatus" target="staus" />
+          <zeebe:output source="=data.apiData" target="apiData" />
+          <zeebe:output source="=for s in data.apiData return s.name + &#34; (Roll: &#34; + string(s.rollno) + &#34;)&#34;" target="studentSummary" />
+          <zeebe:output source="=1" target="studentSummarytes" />
+        </zeebe:ioMapping>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_1uar11o</bpmn:incoming>
+      <bpmn:outgoing>Flow_1yofso9</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:sequenceFlow id="Flow_1ibyghq" sourceRef="Activity_1kzoieo" targetRef="Event_0k2icbb" />
+    <bpmn:scriptTask id="Activity_1kzoieo" name="fetch users details">
+      <bpmn:extensionElements>
+        <zeebe:script expression="=for s in apiData return s.name + &#34; (Roll: &#34; + string(s.rollno) + &#34;)&#34;" resultVariable="studentDetail" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_1yofso9</bpmn:incoming>
+      <bpmn:outgoing>Flow_1ibyghq</bpmn:outgoing>
+    </bpmn:scriptTask>
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="excer3-1">
+      <bpmndi:BPMNShape id="StartEvent_1_di" bpmnElement="StartEvent_1">
+        <dc:Bounds x="182" y="102" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="189" y="145" width="23" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0fzukwi_di" bpmnElement="Activity_15giuqs">
+        <dc:Bounds x="280" y="80" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0k2icbb_di" bpmnElement="Event_0k2icbb">
+        <dc:Bounds x="592" y="102" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="601" y="145" width="19" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1do0i3a_di" bpmnElement="Activity_1kzoieo">
+        <dc:Bounds x="430" y="80" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_1uar11o_di" bpmnElement="Flow_1uar11o">
+        <di:waypoint x="218" y="120" />
+        <di:waypoint x="280" y="120" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1yofso9_di" bpmnElement="Flow_1yofso9">
+        <di:waypoint x="380" y="120" />
+        <di:waypoint x="430" y="120" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1ibyghq_di" bpmnElement="Flow_1ibyghq">
+        <di:waypoint x="530" y="120" />
+        <di:waypoint x="592" y="120" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

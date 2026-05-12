@@ -10,6 +10,8 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
-    "@camunda8/sdk": "^8.8.11"
+    "@camunda8/sdk": "^8.8.11",
+    "axios": "^1.16.0",
+    "camunda-external-task-client-js": "^3.1.0"
   }
 }

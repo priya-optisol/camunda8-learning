@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:zeebe="http://camunda.org/schema/zeebe/1.0" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_00jn3nv" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.46.1" modeler:executionPlatform="Camunda Cloud" modeler:executionPlatformVersion="8.9.0">
+  <bpmn:process id="kyc-update" isExecutable="true">
+    <bpmn:startEvent id="StartEvent_1" name="KYC details received">
+      <bpmn:outgoing>Flow_0my2jw7</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:sequenceFlow id="Flow_0my2jw7" sourceRef="StartEvent_1" targetRef="Activity_134wbun" />
+    <bpmn:exclusiveGateway id="Gateway_1um0ih0" name="KYC valid ?">
+      <bpmn:incoming>Flow_0nf2aer</bpmn:incoming>
+      <bpmn:outgoing>Flow_144wp9u</bpmn:outgoing>
+      <bpmn:outgoing>Flow_143ezhc</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:sequenceFlow id="Flow_0nf2aer" sourceRef="Activity_134wbun" targetRef="Gateway_1um0ih0" />
+    <bpmn:sequenceFlow id="Flow_144wp9u" name="Yes" sourceRef="Gateway_1um0ih0" targetRef="Activity_1b25s1y">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=true</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_143ezhc" name="No" sourceRef="Gateway_1um0ih0" targetRef="Activity_0q4fggy">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=false</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:userTask id="Activity_0q4fggy" name="Raise usertask for invalid file">
+      <bpmn:extensionElements>
+        <zeebe:userTask />
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_143ezhc</bpmn:incoming>
+      <bpmn:outgoing>Flow_18llrgm</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:endEvent id="Event_1vphogw">
+      <bpmn:incoming>Flow_0w9jhj1</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_18llrgm" sourceRef="Activity_0q4fggy" targetRef="Gateway_0jxjh4i" />
+    <bpmn:endEvent id="Event_15v5n5b">
+      <bpmn:incoming>Flow_12ut270</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_12ut270" sourceRef="Activity_1b25s1y" targetRef="Event_15v5n5b" />
+    <bpmn:exclusiveGateway id="Gateway_0jxjh4i" name="User Cancelled ?">
+      <bpmn:incoming>Flow_18llrgm</bpmn:incoming>
+      <bpmn:outgoing>Flow_0fans8n</bpmn:outgoing>
+      <bpmn:outgoing>Flow_0pdlryp</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:sequenceFlow id="Flow_0fans8n" name="Failed" sourceRef="Gateway_0jxjh4i" targetRef="Activity_0hzt1mt">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=true</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_0pdlryp" name="Retry" sourceRef="Gateway_0jxjh4i" targetRef="Activity_08glu5b">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=false</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:endEvent id="Event_07p4d2y">
+      <bpmn:incoming>Flow_12upjjh</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_12upjjh" sourceRef="Activity_08glu5b" targetRef="Event_07p4d2y" />
+    <bpmn:sequenceFlow id="Flow_0w9jhj1" sourceRef="Activity_0hzt1mt" targetRef="Event_1vphogw" />
+    <bpmn:scriptTask id="Activity_08glu5b" name="Retry Validate KYC">
+      <bpmn:incoming>Flow_0pdlryp</bpmn:incoming>
+      <bpmn:outgoing>Flow_12upjjh</bpmn:outgoing>
+    </bpmn:scriptTask>
+    <bpmn:serviceTask id="Activity_0hzt1mt" name="Update KYC status Failed">
+      <bpmn:extensionElements>
+        <zeebe:taskDefinition type="kyc-failed" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_0fans8n</bpmn:incoming>
+      <bpmn:outgoing>Flow_0w9jhj1</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:serviceTask id="Activity_1b25s1y" name="Update KYC status">
+      <bpmn:extensionElements>
+        <zeebe:taskDefinition type="update-kyc" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_144wp9u</bpmn:incoming>
+      <bpmn:outgoing>Flow_12ut270</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:serviceTask id="Activity_134wbun" name="Validate KYC">
+      <bpmn:extensionElements>
+        <zeebe:taskDefinition type="kyc-api-call" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_0my2jw7</bpmn:incoming>
+      <bpmn:outgoing>Flow_0nf2aer</bpmn:outgoing>
+    </bpmn:serviceTask>
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="kyc-update">
+      <bpmndi:BPMNShape id="StartEvent_1_di" bpmnElement="StartEvent_1">
+        <dc:Bounds x="182" y="162" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="171" y="205" width="58" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_1um0ih0_di" bpmnElement="Gateway_1um0ih0" isMarkerVisible="true">
+        <dc:Bounds x="405" y="155" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="402" y="125" width="58" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0oo2cds_di" bpmnElement="Activity_0q4fggy">
+        <dc:Bounds x="500" y="250" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_1vphogw_di" bpmnElement="Event_1vphogw">
+        <dc:Bounds x="952" y="272" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_15v5n5b_di" bpmnElement="Event_15v5n5b">
+        <dc:Bounds x="652" y="162" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_0jxjh4i_di" bpmnElement="Gateway_0jxjh4i" isMarkerVisible="true">
+        <dc:Bounds x="645" y="265" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="629" y="235" width="85" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_07p4d2y_di" bpmnElement="Event_07p4d2y">
+        <dc:Bounds x="952" y="382" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0wy6q0y_di" bpmnElement="Activity_08glu5b">
+        <dc:Bounds x="770" y="360" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0lfxn1k_di" bpmnElement="Activity_0hzt1mt">
+        <dc:Bounds x="770" y="250" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0wy83o4_di" bpmnElement="Activity_1b25s1y">
+        <dc:Bounds x="500" y="140" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0c7p79w_di" bpmnElement="Activity_134wbun">
+        <dc:Bounds x="260" y="140" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_0my2jw7_di" bpmnElement="Flow_0my2jw7">
+        <di:waypoint x="218" y="180" />
+        <di:waypoint x="260" y="180" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0nf2aer_di" bpmnElement="Flow_0nf2aer">
+        <di:waypoint x="360" y="180" />
+        <di:waypoint x="405" y="180" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_144wp9u_di" bpmnElement="Flow_144wp9u">
+        <di:waypoint x="455" y="180" />
+        <di:waypoint x="500" y="180" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="469" y="162" width="18" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_143ezhc_di" bpmnElement="Flow_143ezhc">
+        <di:waypoint x="430" y="205" />
+        <di:waypoint x="430" y="290" />
+        <di:waypoint x="500" y="290" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="438" y="245" width="15" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_18llrgm_di" bpmnElement="Flow_18llrgm">
+        <di:waypoint x="600" y="290" />
+        <di:waypoint x="645" y="290" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_12ut270_di" bpmnElement="Flow_12ut270">
+        <di:waypoint x="600" y="180" />
+        <di:waypoint x="652" y="180" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0fans8n_di" bpmnElement="Flow_0fans8n">
+        <di:waypoint x="695" y="290" />
+        <di:waypoint x="770" y="290" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="718" y="272" width="31" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0pdlryp_di" bpmnElement="Flow_0pdlryp">
+        <di:waypoint x="670" y="315" />
+        <di:waypoint x="670" y="400" />
+        <di:waypoint x="770" y="400" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="672" y="355" width="27" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_12upjjh_di" bpmnElement="Flow_12upjjh">
+        <di:waypoint x="870" y="400" />
+        <di:waypoint x="952" y="400" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0w9jhj1_di" bpmnElement="Flow_0w9jhj1">
+        <di:waypoint x="870" y="290" />
+        <di:waypoint x="952" y="290" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>
